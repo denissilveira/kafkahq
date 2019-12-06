@@ -7,6 +7,7 @@ import io.confluent.kafka.schemaregistry.client.rest.RestService;
 import io.confluent.kafka.schemaregistry.client.security.basicauth.BasicAuthCredentialProvider;
 import io.confluent.kafka.schemaregistry.client.security.basicauth.BasicAuthCredentialProviderFactory;
 import io.confluent.kafka.schemaregistry.client.security.basicauth.UserInfoCredentialProvider;
+import io.micronaut.core.util.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -15,6 +16,7 @@ import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.codehaus.httpcache4j.uri.URIBuilder;
 import org.kafkahq.configs.AbstractProperties;
+import org.kafkahq.configs.Connect;
 import org.kafkahq.configs.Connection;
 import org.kafkahq.configs.Default;
 import org.sourcelab.kafka.connect.apiclient.Configuration;
@@ -23,10 +25,7 @@ import org.sourcelab.kafka.connect.apiclient.KafkaConnectClient;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -175,39 +174,19 @@ public class KafkaModule {
     private Map<String, KafkaConnectClient> connectRestClient = new HashMap<>();
 
     public KafkaConnectClient getConnectRestClient(String clusterId) {
-        if (!this.connectRestClient.containsKey(clusterId)) {
-            Connection connection = this.getConnection(clusterId);
-
-            if (connection.getConnect() != null) {
-                URIBuilder uri = URIBuilder.fromString(connection.getConnect().getUrl().toString());
-                Configuration configuration = new Configuration(uri.toNormalizedURI(false).toString());
-
-                if (connection.getConnect().getBasicAuthUsername() != null) {
-                    configuration.useBasicAuth(
-                        connection.getConnect().getBasicAuthUsername(),
-                        connection.getConnect().getBasicAuthPassword()
-                    );
-                }
-
-                if (connection.getConnect().getSslTrustStore() != null) {
-                    configuration.useTrustStore(
-                        new File(connection.getConnect().getSslTrustStore()),
-                        connection.getConnect().getSslTrustStorePassword()
-                    );
-                }
-
-                if (connection.getConnect().getSslKeyStore() != null) {
-                    configuration.useTrustStore(
-                        new File(connection.getConnect().getSslKeyStore()),
-                        connection.getConnect().getSslKeyStorePassword()
-                    );
-                }
-
-                this.connectRestClient.put(clusterId, new KafkaConnectClient(configuration));
-            }
-        }
 
         return this.connectRestClient.get(clusterId);
+    }
+
+    public List<Connect> getConnects(String clusterId) {
+
+        if (!this.connectRestClient.containsKey(clusterId)) {
+            Connection connection = this.getConnection(clusterId);
+            if (connection.getConnect() != null) {
+                return connection.getConnect();
+            }
+        }
+        return Collections.emptyList();
     }
 
 }

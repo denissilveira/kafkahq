@@ -11,13 +11,13 @@ micronaut:
         paths: classpath:static
         mapping: "${kafkahq.server.base-path:}/static/**"
   security:
-    enabled: true
+    enabled: false
     endpoints:
       login:
-        enabled: true
+        enabled: false
         path: "${kafkahq.server.base-path:}/login"
       logout:
-        enabled: true
+        enabled: false
         path: "${kafkahq.server.base-path:}/logout"
         get-allowed: true
     session:
@@ -74,6 +74,13 @@ kafkahq:
     my-test-cluster: # url friendly name for the cluster (letter, number, _, -, ... dot are not allowed here)
       properties: # standard kafka properties (optional)
         bootstrap.servers: "localhost:9092"
+      connect:
+        -
+          name: "my-first-connect"
+          url: "http://thednsofmyconnectcluster:8083"
+        -
+          name: "my-second-connect"
+          url: "http://connect:8083" # connect url (optional)
     my-new-cluster: # url friendly name for the cluster (letter, number, _, -, ... dot are not allowed here)
       properties: # standard kafka properties (optional)
         bootstrap.servers: "localhost:9092"

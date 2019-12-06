@@ -2,6 +2,7 @@
 
 <#-- @ftlvariable name="tab" type="java.lang.String" -->
 <#-- @ftlvariable name="clusters" type="java.util.List<java.lang.String>" -->
+<#-- @ftlvariable name="connects" type="java.util.List<jorg.kafkahq.configs.Connect>" -->
 <#-- @ftlvariable name="clusterId" type="java.lang.String" -->
 <#-- @ftlvariable name="basePath" type="java.lang.String" -->
 <#-- @ftlvariable name="toast" type="java.lang.String" -->
@@ -90,9 +91,21 @@
                             <a href="${basePath}/${clusterId}/schema"><i class="fa fa-fw fa-cogs" aria-hidden="true"></i> Schema Registry</a>
                         </li>
                     </#if>
-                    <#if connectEnabled?? && connectEnabled == true && roles?seq_contains("connect") == true>
-                        <li class="${(tab == "connect")?then("active", "")}">
-                            <a href="${basePath}/${clusterId}/connect"><i class="fa fa-fw fa-exchange" aria-hidden="true"></i> Connect</a>
+                    <#if roles?seq_contains("connect") == true && connects?has_content>
+                        <li class="${(tab == "cluster")?then("active", "")}">
+                            <a href="#connects"
+                                data-toggle="collapse"
+                                aria-expanded="false"
+                                class="dropdown-toggle"><i
+                                class="fa fa-fw fa fa-exchange"
+                                aria-hidden="true"></i> Connect <span class="badge badge-success">${clusterId}</span></a>
+                            <ul class="collapse list-unstyled" id="connects">
+                                <#list connects as connect>
+                                <li class="${(tab == "connect")?then("active", "")}">
+                                    <a href="${basePath}/${clusterId}/connect/${connect.name}"> ${connect.name}</a>
+                                </li>
+                                </#list>
+                            </ul>
                         </li>
                     </#if>
                 </ul>
