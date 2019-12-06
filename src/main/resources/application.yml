@@ -70,7 +70,13 @@ kafkahq:
       enabled: true
       name: org.kafkahq.log.access
       format: "[Date: {}] [Duration: {} ms] [Url: {} {} {}] [Status: {}] [Ip: {}] [Length: {}] [Port: {}]"
-
+  connections:
+    my-test-cluster: # url friendly name for the cluster (letter, number, _, -, ... dot are not allowed here)
+      properties: # standard kafka properties (optional)
+        bootstrap.servers: "localhost:9092"
+    my-new-cluster: # url friendly name for the cluster (letter, number, _, -, ... dot are not allowed here)
+      properties: # standard kafka properties (optional)
+        bootstrap.servers: "localhost:9092"
   clients-defaults:
     consumer:
       properties:
